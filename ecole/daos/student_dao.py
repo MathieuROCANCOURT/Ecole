@@ -25,13 +25,14 @@ class StudentDao(Dao[Student]):
                     VALUES (%s,%s,%s,%s);
                 """
             cursor.execute(sql, (student.first_name, student.last_name, student.age, student.address.id))
-            record = cursor.fetchone()
+            id_person = cursor.lastrowid
 
             sql = """
-                    INSERT INTO student(student_nbr, id_person)
-                    VALUES (%s,%s);
+                    INSERT IGNORE INTO student(student_nbr, id_person)
+                    SELECT COALESCE(MAX(student_nbr), 0) + 1, %s
+                    FROM student;
                    """
-            cursor.execute(sql, (student.student_nbr, record.index("id_person")))
+            cursor.execute(sql, (id_person,))
 
             for course in student.courses_taken:
                 sql = "INSERT INTO takes(student_nbr, id_course) VALUES (%s,%s);"
