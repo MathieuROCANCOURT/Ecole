@@ -16,7 +16,8 @@ class Dao[T](ABC):
         pymysql.connect(host='localhost',
                         user='root',
                         database='ecole',
-                        cursorclass=pymysql.cursors.DictCursor)
+                        cursorclass=pymysql.cursors.DictCursor,
+                        autocommit=True)
 
     @abstractmethod
     def create(self, obj: T) -> int:
