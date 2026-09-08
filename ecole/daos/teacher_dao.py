@@ -20,17 +20,18 @@ class TeacherDao(Dao[Teacher]):
         """
         with Dao.connection.cursor() as cursor:
             sql = """
-                    INSERT INTO person(first_name, last_name, age, id_address)
-                    VALUES (%s,%s,%s,%s);
-                """
-            cursor.execute(sql, (teacher.first_name, teacher.last_name, teacher.age, teacher.address.id))
-            record = cursor.fetchone()
-
-            sql = """
-                    INSERT INTO teacher(id_teacher, hiring_date, id_person)
+                    INSERT INTO person(first_name, last_name, age)
                     VALUES (%s,%s,%s);
                 """
-            cursor.execute(sql, (teacher.id, teacher.hiring_date, record["id_person"]))
+            cursor.execute(sql, (teacher.first_name, teacher.last_name, teacher.age))
+            id_person = cursor.lastrowid
+
+            sql = """
+                    INSERT INTO teacher(hiring_date, id_person)
+                    VALUES (%s, %s);
+                """
+
+            cursor.execute(sql, (teacher.hiring_date, id_person))
 
             return cursor.lastrowid
 
