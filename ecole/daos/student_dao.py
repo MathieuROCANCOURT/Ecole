@@ -28,7 +28,7 @@ class StudentDao(Dao[Student]):
             id_person = cursor.lastrowid
 
             sql = """
-                    INSERT IGNORE INTO student(student_nbr, id_person)
+                    INSERT INTO student(student_nbr, id_person)
                     SELECT COALESCE(MAX(student_nbr), 0) + 1, %s
                     FROM student;
                    """
@@ -36,9 +36,16 @@ class StudentDao(Dao[Student]):
 
             for course in student.courses_taken:
                 sql = "INSERT INTO takes(student_nbr, id_course) VALUES (%s,%s);"
-                cursor.execute(sql, (student.student_nbr, course))
+                cursor.execute(sql, (student.student_nbr, course.id))
 
-            return cursor.lastrowid
+            cursor.execute(
+                "SELECT MAX(student_nbr) + 1 AS student_nbr FROM student"
+            )
+            record = cursor.fetchone()
+
+            student.student_nbr = record["student_nbr"]
+
+            return student.student_nbr
 
     def read(self, student_nbr: int) -> Optional[Student]:
         """Renvoit l'étudiant correspondant à l'entité dont l'id est student_nbr
