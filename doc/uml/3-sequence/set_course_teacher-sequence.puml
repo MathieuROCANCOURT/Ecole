@@ -1,0 +1,29 @@
+@startuml
+actor "Administrator" as Admin
+participant "System" as System
+participant "Course" as Course
+participant "newTeacher: Teacher" as NewTeacher
+participant "formerTeacher: Teacher" as FormerTeacher
+
+Activate Admin
+Admin -> System : assignTeacher(course, newTeacher)
+Activate System
+Deactivate Admin
+System -> Course : setTeacher(newTeacher)
+Activate Course
+alt Former teacher exists
+    Course -> FormerTeacher : removeCourse(this)
+    Activate FormerTeacher
+    Deactivate FormerTeacher
+end
+
+Course -> NewTeacher : addCourse(this)
+Activate NewTeacher
+Course -> Course : teacher = newTeacher
+
+Course --> System : assignmentConfirmed()
+Deactivate Course
+Activate Admin
+System --> Admin : confirmationMessage()
+
+@enduml
