@@ -9,6 +9,7 @@ from datetime import date
 
 from daos.address_dao import AddressDao
 from daos.course_dao import CourseDao
+from daos.student_dao import StudentDao
 from daos.teacher_dao import TeacherDao
 from models.address import Address
 from models.course import Course
@@ -30,15 +31,23 @@ class School:
 
     def add_course(self, course: Course) -> None:
         """Ajout du cours course à la liste des cours."""
+        course.id = CourseDao().create(course)
         self.courses.append(course)
 
     def add_teacher(self, teacher: Teacher) -> None:
         """Ajout de l'enseignant teacher à la liste des enseignants."""
+        teacher.id = TeacherDao().create(teacher)
         self.teachers.append(teacher)
 
     def add_student(self, student: Student) -> None:
         """Ajout de l'élève spécifié à la liste des élèves."""
+        student.student_nbr = StudentDao().create(student)
         self.students.append(student)
+
+    def add_address(self, address: Address) -> Address:
+        """Ajout de l'élève spécifié à la liste des élèves."""
+        address.id = AddressDao().create(address)
+        return address
 
     def display_courses_list(self) -> None:
         """Affichage de la liste des cours avec pour chacun d'eux :
@@ -73,10 +82,11 @@ class School:
         valerie: Student = Student('Valérie', 'Dumont', 13)
         louis: Student = Student('Louis', 'Berthot', 11)
 
-        paul.address = Address('12 rue des Pinsons', 'Castanet', 31320)
-        valerie.address = Address('43 avenue Jean Zay', 'Toulouse', 31200)
-        louis.address = Address('7 impasse des Coteaux', 'Cornebarrieu', 31150)
+        paul.address = self.add_address(Address('12 rue des Pinsons', 'Castanet', 31320))
+        valerie.address = self.add_address(Address('43 avenue Jean Zay', 'Toulouse', 31200))
+        louis.address = self.add_address(Address('7 impasse des Coteaux', 'Cornebarrieu', 31150))
 
+        print(paul.address.id)
         # ajout de ceux-ci à l'école
         for student in [paul, valerie, louis]:
             self.add_student(student)
@@ -99,32 +109,13 @@ class School:
         sport: Course = Course("Sport", date(2024, 3, 4),
                                date(2024, 3, 15))
 
-        # ajout de ceux-ci à l'école
-        for course in [francais, histoire, geographie, mathematiques,
-                       physique, chimie, anglais, sport]:
-            self.add_course(course)
-
         # création des enseignants
         victor = Teacher('Victor', 'Hugo', 23, date(2023, 9, 4))
         jules = Teacher('Jules', 'Michelet', 32, date(2023, 9, 4))
         sophie = Teacher('Sophie', 'Germain', 25, date(2023, 9, 4))
         marie = Teacher('Marie', 'Curie', 31, date(2023, 9, 4))
-        william = Teacher('William', 'Shakespeare', 34, date(2023, 9, 4))
+        william = Teacher('William', 'Shake', 34, date(2023, 9, 4))
         michel = Teacher('Michel', 'Platini', 42, date(2023, 9, 4))
-
-        # ajout de ceux-ci à l'école
-        for teacher in [victor, jules, sophie, marie, william, michel]:
-            self.add_teacher(teacher)
-
-        # association des élèves aux cours qu'ils suivent
-        for course in [geographie, physique, anglais]:
-            paul.add_course(course)
-
-        for course in [francais, histoire, chimie]:
-            valerie.add_course(course)
-
-        for course in [mathematiques, physique, geographie, sport]:
-            louis.add_course(course)
 
         # association des enseignants aux cours qu'ils enseignent
         victor.add_course(francais)
@@ -140,3 +131,22 @@ class School:
         william.add_course(anglais)
 
         michel.add_course(sport)
+
+        # ajout de ceux-ci à l'école
+        for teacher in [victor, jules, sophie, marie, william, michel]:
+            self.add_teacher(teacher)
+
+        # ajout de ceux-ci à l'école
+        for course in [francais, histoire, geographie, mathematiques,
+                       physique, chimie, anglais, sport]:
+            self.add_course(course)
+
+        # association des élèves aux cours qu'ils suivent
+        for course in [geographie, physique, anglais]:
+            paul.add_course(course)
+
+        for course in [francais, histoire, chimie]:
+            valerie.add_course(course)
+
+        for course in [mathematiques, physique, geographie, sport]:
+            louis.add_course(course)
