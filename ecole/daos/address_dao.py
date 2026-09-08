@@ -41,7 +41,7 @@ class AddressDao(Dao[Address]):
             address = Address(record["street"],
                               record["city"],
                               record["postal_code"])
-            address.id = record["id_course"]
+            address.id = record["id_address"]
         else:
             address = None
 
