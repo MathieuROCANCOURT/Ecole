@@ -4,7 +4,7 @@
 Classe Dao[Student]
 """
 from daos import course_dao, address_dao
-from models.address import Address
+from models.course import Course
 from models.student import Student
 from daos.dao import Dao
 from dataclasses import dataclass
@@ -43,7 +43,7 @@ class StudentDao(Dao[Student]):
             )
             record = cursor.fetchone()
 
-            student.student_nbr = record["student_nbr"]
+            student.student_nbr = record.__getattribute__("student_nbr")
 
             return student.student_nbr
 
@@ -66,15 +66,15 @@ class StudentDao(Dao[Student]):
             return None
 
         student = Student(
-            record["first_name"],
-            record["last_name"],
-            record["age"]
+            record.__getattribute__("first_name"),
+            record.__getattribute__("last_name"),
+            record.__getattribute__("age")
         )
 
-        student.student_nbr = record["student_nbr"]
+        student.student_nbr = record.__getattribute__("student_nbr")
 
         student.address = address_dao.AddressDao().read(
-            record["id_address"]
+            record.__getattribute__("id_address")
         )
 
         with Dao.connection.cursor() as cursor:
@@ -89,11 +89,13 @@ class StudentDao(Dao[Student]):
             cursor.execute(sql, (student_nbr,))
             record = cursor.fetchone()
 
-            for id_course in record["id_courses"].split(','):
+            list_courses: list[Course] = []
+            for id_course in record.__getattribute__("id_courses").split(','):
                 course = course_dao.CourseDao().read(id_course)
                 if course is not None:
-                    student.add_course(course)
+                    list_courses.append(course)
 
+            student.courses_taken = list_courses
         return student
 
     def update(self, student: Student) -> bool:

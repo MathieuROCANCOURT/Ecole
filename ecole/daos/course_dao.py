@@ -3,7 +3,6 @@
 """
 Classe Dao[Course]
 """
-from models import teacher
 from models.course import Course
 from daos.dao import Dao
 from dataclasses import dataclass
@@ -48,15 +47,15 @@ class CourseDao(Dao[Course]):
             cursor.execute(sql, (id_course,))
             record = cursor.fetchone()
         if record is not None:
-            course = Course(record["name"],
-                            record["start_date"],
-                            record["end_date"])
-            course.id = record["id_course"]
+            course = Course(record.__getattribute__("name"),
+                            record.__getattribute__("start_date"),
+                            record.__getattribute__("end_date"))
+            course.id = record.__getattribute__("id_course")
 
-            course.set_teacher(Teacher(record["first_name"],
-                                       record["last_name"],
-                                       record["age"],
-                                       record["hiring_date"]))
+            course.set_teacher(Teacher(record.__getattribute__("first_name"),
+                                       record.__getattribute__("last_name"),
+                                       record.__getattribute__("age"),
+                                       record.__getattribute__("hiring_date")))
             with Dao.connection.cursor() as cursor:
                 sql = """
                     SELECT first_name, last_name, age FROM course
@@ -71,9 +70,9 @@ class CourseDao(Dao[Course]):
                 for student_coord in record:
                     course.add_student(
                         Student(
-                            student_coord["first_name"],
-                            student_coord["last_name"],
-                            student_coord["age"]
+                            student_coord.__getattribute__("first_name"),
+                            student_coord.__getattribute__("last_name"),
+                            student_coord.__getattribute__("age")
                         )
                     )
 
