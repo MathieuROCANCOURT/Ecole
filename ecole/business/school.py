@@ -111,6 +111,11 @@ class School:
         return course_dao.delete(course)
 
     @staticmethod
+    def delete_student(student: Student):
+        student_dao: StudentDao = StudentDao()
+        return student_dao.delete(student)
+
+    @staticmethod
     def delete_address(address: Address):
         address_dao: AddressDao = AddressDao()
         return address_dao.delete(address)
@@ -202,3 +207,11 @@ class School:
 
         paul.address = address1
         self.update_student(paul)
+
+        self.delete_address(address1)
+        assert self.get_address_by_id(1) is None
+
+        self.add_address(Address("place de la moutarde", "Dijon", "21000"))
+        assert self.get_address_by_id(4).city == "Dijon"
+
+        self.delete_student(valerie)
