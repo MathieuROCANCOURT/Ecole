@@ -55,7 +55,7 @@ class AddressDao(Dao[Address]):
         """
         with Dao.connection.cursor() as cursor:
             sql = """
-                    UPDATE address SET street=%s city=%s postal_code=%s
+                    UPDATE address SET street=%s, city=%s, postal_code=%s
                     WHERE id_address=%s;
                    """
             cursor.execute(sql, (address.street, address.city, address.postal_code, address.id))

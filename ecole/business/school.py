@@ -95,6 +95,11 @@ class School:
         address_dao: AddressDao = AddressDao()
         return address_dao.read(id_address)
 
+    @staticmethod
+    def update_address(address: Address):
+        address_dao: AddressDao = AddressDao()
+        return address_dao.update(address)
+
     def init_static(self) -> None:
         """Initialisation d'un jeu de test pour l'école."""
 
@@ -103,11 +108,12 @@ class School:
         valerie: Student = Student('Valérie', 'Dumont', 13)
         louis: Student = Student('Louis', 'Berthot', 11)
 
-        paul.address = self.add_address(Address('12 rue des Pinsons', 'Castanet', 31320))
-        valerie.address = self.add_address(Address('43 avenue Jean Zay', 'Toulouse', 31200))
-        louis.address = self.add_address(Address('7 impasse des Coteaux', 'Cornebarrieu', 31150))
+        address1 = Address('12 rue des Pinsons', 'Castanet', "31320")
 
-        print(paul.address.id)
+        paul.address = self.add_address(address1)
+        valerie.address = self.add_address(Address('43 avenue Jean Zay', 'Toulouse', "31200"))
+        louis.address = self.add_address(Address('7 impasse des Coteaux', 'Cornebarrieu', "31150"))
+
         # ajout de ceux-ci à l'école
         for student in [paul, valerie, louis]:
             self.add_student(student)
@@ -171,3 +177,7 @@ class School:
 
         for course in [mathematiques, physique, geographie, sport]:
             louis.add_course(course)
+
+        address1.city = "Paris"
+        address1.postal_code = "95002"
+        self.update_address(address1)

@@ -14,7 +14,7 @@ class Address:
     id: Optional[int] = field(default=None, init=False)
     street: str
     city: str
-    postal_code: int
+    postal_code: str
 
     def __str__(self) -> str:
         return f"{self.street}, {self.postal_code} {self.city}"

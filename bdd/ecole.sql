@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `address` (
   `id_address` int NOT NULL AUTO_INCREMENT,
   `street` varchar(80) NOT NULL,
   `city` varchar(50) NOT NULL,
-  `postal_code` smallint NOT NULL,
+  `postal_code` varchar(5) NOT NULL,
   PRIMARY KEY (`id_address`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
