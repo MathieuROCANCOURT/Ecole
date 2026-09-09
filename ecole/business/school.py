@@ -9,6 +9,7 @@ from datetime import date
 
 from daos.address_dao import AddressDao
 from daos.course_dao import CourseDao
+from daos.dao import Dao
 from daos.student_dao import StudentDao
 from daos.teacher_dao import TeacherDao
 from models.address import Address
@@ -28,6 +29,21 @@ class School:
     courses: list[Course] = field(default_factory=list, init=False)
     teachers: list[Teacher] = field(default_factory=list, init=False)
     students: list[Student] = field(default_factory=list, init=False)
+
+    @staticmethod
+    def reset_database():
+        """Delete all data in all tables."""
+        with Dao.connection.cursor() as cursor:
+            cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+
+            cursor.execute("TRUNCATE TABLE takes")
+            cursor.execute("TRUNCATE TABLE course")
+            cursor.execute("TRUNCATE TABLE student")
+            cursor.execute("TRUNCATE TABLE teacher")
+            cursor.execute("TRUNCATE TABLE person")
+            cursor.execute("TRUNCATE TABLE address")
+
+            cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
 
     def add_course(self, course: Course) -> None:
         """Ajout du cours course à la liste des cours."""

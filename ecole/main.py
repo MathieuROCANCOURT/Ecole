@@ -17,18 +17,14 @@ Bienvenue dans notre école
 
     school: School = School()
 
+    # supprimer toutes les données dans les tables
+    school.reset_database()
+
     # initialisation d'un ensemble de cours, enseignants et élèves composant l'école
     school.init_static()
 
     # affichage de la liste des cours, leur enseignant et leurs élèves
     school.display_courses_list()
-
-    print(school.get_course_by_id(3))
-    print(school.get_course_by_id(2))
-    print(school.get_course_by_id(9))
-
-    print(school.get_address_by_id(2))
-    print(school.get_teacher_by_id(2))
 
 
 if __name__ == '__main__':
