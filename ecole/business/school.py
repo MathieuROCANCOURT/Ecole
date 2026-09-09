@@ -100,6 +100,11 @@ class School:
         address_dao: AddressDao = AddressDao()
         return address_dao.update(address)
 
+    @staticmethod
+    def delete_address(address: Address):
+        address_dao: AddressDao = AddressDao()
+        return address_dao.delete(address)
+
     def init_static(self) -> None:
         """Initialisation d'un jeu de test pour l'école."""
 
@@ -181,3 +186,5 @@ class School:
         address1.city = "Paris"
         address1.postal_code = "95002"
         self.update_address(address1)
+
+        self.delete_address(address1)
