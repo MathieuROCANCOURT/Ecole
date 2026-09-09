@@ -54,10 +54,9 @@ class StudentDao(Dao[Student]):
 
         with Dao.connection.cursor() as cursor:
             sql = """
-                    SELECT *
-                    FROM student s
-                    JOIN person p ON s.id_person = p.id_person
-                    WHERE s.student_nbr = %s;
+                    SELECT * FROM student
+                    JOIN person ON student.id_person = person.id_person
+                    WHERE student.student_nbr = %s;
                 """
 
             cursor.execute(sql, (student_nbr,))
@@ -77,6 +76,23 @@ class StudentDao(Dao[Student]):
         student.address = address_dao.AddressDao().read(
             record["id_address"]
         )
+
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                SELECT
+                    GROUP_CONCAT(id_course SEPARATOR ',') AS id_courses
+                FROM student
+                JOIN takes ON takes.student_nbr = student.student_nbr
+                WHERE student.student_nbr = %s;
+                """
+
+            cursor.execute(sql, (student_nbr,))
+            record = cursor.fetchone()
+
+            for id_course in record["id_courses"].split(','):
+                course = course_dao.CourseDao().read(id_course)
+                if course is not None:
+                    student.add_course(course)
 
         return student
 
