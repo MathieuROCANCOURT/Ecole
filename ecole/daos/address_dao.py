@@ -69,8 +69,16 @@ class AddressDao(Dao[Address]):
         """
         with Dao.connection.cursor() as cursor:
             sql = """
-                    DELETE FROM address
-                    WHERE id_address=%s;
+                    UPDATE person
+                    SET id_address = NULL
+                    WHERE id_address = %s;
                 """
             cursor.execute(sql, (address.id,))
+
+            sql = """
+                    DELETE FROM address
+                    WHERE id_address = %s;
+                """
+            cursor.execute(sql, (address.id,))
+
             return cursor.rowcount > 0
