@@ -40,12 +40,12 @@ class School:
         self.teachers.append(teacher)
 
     def add_student(self, student: Student) -> None:
-        """Ajout de l'élève spécifié à la liste des élèves."""
+        """Ajout de l'élève Student spécifié à la liste des élèves."""
         student.student_nbr = StudentDao().create(student)
         self.students.append(student)
 
     def add_address(self, address: Address) -> Address:
-        """Ajout de l'élève spécifié à la liste des élèves."""
+        """Ajout de l'adresse Address spécifié à la liste des adresses."""
         address.id = AddressDao().create(address)
         return address
 
