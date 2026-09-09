@@ -38,10 +38,10 @@ class AddressDao(Dao[Address]):
             cursor.execute(sql, (id_address,))
             record = cursor.fetchone()
         if record is not None:
-            address = Address(record.__getattribute__("street"),
-                              record.__getattribute__("city"),
-                              record.__getattribute__("postal_code"))
-            address.id = record.__getattribute__("id_address")
+            address = Address(record["street"],
+                              record["city"],
+                              record["postal_code"])
+            address.id = record["id_address"]
         else:
             address = None
 

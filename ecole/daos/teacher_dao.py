@@ -59,15 +59,13 @@ class TeacherDao(Dao[Teacher]):
             record = cursor.fetchone()
 
         if record is not None:
-            teacher = Teacher(record.__getattribute__("first_name"),
-                              record.__getattribute__("last_name"),
-                              record.__getattribute__("age"),
-                              record.__getattribute__("hiring_date"))
-
-            teacher.address = address_dao.AddressDao().read(record.__getattribute__("id_address"))
-            teacher.id = record.__getattribute__("id_teacher")
-
-            for id_course in record.__getattribute__("id_courses").split(","):
+            teacher = Teacher(record["first_name"],
+                              record["last_name"],
+                              record["age"],
+                              record["hiring_date"])
+            teacher.address = address_dao.AddressDao().read(record["id_address"])
+            teacher.id = record["id_teacher"]
+            for id_course in record["id_courses"].split(","):
                 course_dao.CourseDao().read(int(id_course))
         else:
             teacher = None
