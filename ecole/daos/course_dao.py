@@ -3,6 +3,7 @@
 """
 Classe Dao[Course]
 """
+from daos import student_dao
 from models import teacher
 from models.course import Course
 from daos.dao import Dao
@@ -105,8 +106,18 @@ class CourseDao(Dao[Course]):
         """
         with Dao.connection.cursor() as cursor:
             sql = """
+                    DELETE FROM takes
+                    WHERE id_course = %s;
+                """
+            cursor.execute(sql, (course.id,))
+
+            for student in course.students_taking_it:
+                student.courses_taken.remove(course)
+
+            sql = """
                     DELETE FROM course
                     WHERE id_course=%s;
                 """
             cursor.execute(sql, (course.id,))
+
             return cursor.rowcount > 0

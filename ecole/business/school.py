@@ -96,9 +96,19 @@ class School:
         return address_dao.read(id_address)
 
     @staticmethod
+    def update_student(student: Student):
+        student_dao: StudentDao = StudentDao()
+        return student_dao.update(student)
+
+    @staticmethod
     def update_address(address: Address):
         address_dao: AddressDao = AddressDao()
         return address_dao.update(address)
+
+    @staticmethod
+    def delete_course(course: Course):
+        course_dao: CourseDao = CourseDao()
+        return course_dao.delete(course)
 
     @staticmethod
     def delete_address(address: Address):
@@ -187,4 +197,8 @@ class School:
         address1.postal_code = "95002"
         self.update_address(address1)
 
-        self.delete_address(address1)
+        self.delete_course(geographie)
+        self.delete_course(sport)
+
+        paul.address = address1
+        self.update_student(paul)

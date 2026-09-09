@@ -38,9 +38,11 @@ class StudentDao(Dao[Student]):
                 sql = "INSERT INTO takes(student_nbr, id_course) VALUES (%s,%s);"
                 cursor.execute(sql, (student.student_nbr, course.id))
 
-            cursor.execute(
-                "SELECT MAX(student_nbr) + 1 AS student_nbr FROM student"
-            )
+            sql = """
+                    SELECT student_nbr FROM student
+                    WHERE id_person = %s
+                """
+            cursor.execute(sql, (id_person,))
             record = cursor.fetchone()
 
             student.student_nbr = record["student_nbr"]
@@ -87,12 +89,13 @@ class StudentDao(Dao[Student]):
                 """
 
             cursor.execute(sql, (student_nbr,))
-            record = cursor.fetchone()
+            record_id_courses = cursor.fetchone()["id_courses"]
 
-            for id_course in record["id_courses"].split(','):
-                course = course_dao.CourseDao().read(id_course)
-                if course is not None:
-                    student.add_course(course)
+            if record_id_courses is not None:
+                for id_course in record_id_courses.split(','):
+                    course = course_dao.CourseDao().read(id_course)
+                    if course is not None:
+                        student.add_course(course)
 
         return student
 
@@ -102,7 +105,42 @@ class StudentDao(Dao[Student]):
         :param student: cours déjà mis à jour en mémoire
         :return: True si la mise à jour a pu être réalisée
         """
+
         with Dao.connection.cursor() as cursor:
+            sql = """
+                    DELETE FROM takes
+                    WHERE student_nbr = %s;
+                """
+            cursor.execute(sql, (student.student_nbr,))
+
+            sql = """
+                    UPDATE person
+                    JOIN student ON student.id_person = person.id_person
+                    SET person.first_name = %s, person.last_name = %s, person.age = %s
+                    WHERE student.student_nbr = %s;
+                """
+            cursor.execute(sql, (student.first_name, student.last_name, student.age, student.student_nbr))
+            if student.address is not None:
+                if student.address.id is None:
+                    address_dao.AddressDao().create(student.address)
+                    sql = """
+                            UPDATE person
+                            JOIN student ON student.id_person = person.id_person
+                            SET person.id_address = %s
+                            WHERE student.student_nbr = %s;
+                        """
+                    cursor.execute(sql, (student.address.id, student.student_nbr))
+
+                else:
+                    address_dao.AddressDao().update(student.address)
+
+            for course in student.courses_taken:
+                sql = """
+                        INSERT INTO takes(student_nbr, id_course)
+                        VALUES (%s, %s)
+                    """
+                cursor.execute(sql, (student.student_nbr, course.id))
+
             return cursor.rowcount > 0
 
     def delete(self, student: Student) -> bool:

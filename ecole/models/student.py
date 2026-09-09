@@ -6,6 +6,8 @@ Classe Student, fille de la classe Person
 
 from dataclasses import dataclass, field
 from typing import ClassVar
+
+from daos import student_dao
 from .person import Person
 from .course import Course
 
@@ -30,6 +32,7 @@ class Student(Person):
         """Ajout du cours course à la liste des cours suivis par l'élève."""
         self.courses_taken.append(course)
         course.students_taking_it.append(self)
+        student_dao.StudentDao().update(self)
 
     def __str__(self) -> str:
         person_str = super().__str__()
