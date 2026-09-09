@@ -70,6 +70,11 @@ class School:
         return teacher_dao.read(id_teacher)
 
     @staticmethod
+    def get_student_by_id(id_student: int):
+        student_dao: StudentDao = StudentDao()
+        return student_dao.read(id_student)
+
+    @staticmethod
     def get_address_by_id(id_address: int):
         address_dao: AddressDao = AddressDao()
         return address_dao.read(id_address)
