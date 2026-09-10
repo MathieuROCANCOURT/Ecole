@@ -96,6 +96,16 @@ class School:
         return address_dao.read(id_address)
 
     @staticmethod
+    def update_course(course: Course):
+        course_dao: CourseDao = CourseDao()
+        return course_dao.update(course)
+
+    @staticmethod
+    def update_teacher(teacher: Teacher):
+        teacher_dao: TeacherDao = TeacherDao()
+        return teacher_dao.update(teacher)
+
+    @staticmethod
     def update_student(student: Student):
         student_dao: StudentDao = StudentDao()
         return student_dao.update(student)
@@ -155,6 +165,8 @@ class School:
                                  date(2024, 2, 24))
         sport: Course = Course("Sport", date(2024, 3, 4),
                                date(2024, 3, 15))
+        svt: Course = Course("SVT", date(2026, 3, 1),
+                             date(2026, 6, 25))
 
         # création des enseignants
         victor = Teacher('Victor', 'Hugo', 23, date(2023, 9, 4))
@@ -215,3 +227,13 @@ class School:
         assert self.get_address_by_id(4).city == "Dijon"
 
         self.delete_student(valerie)
+
+        jules.add_course(svt)
+        self.add_course(svt)
+        jules.add_course(anglais)
+        self.update_course(anglais)
+
+        jules.address = Address("Rue de la liberté", "Colombelles", "14460")
+        jules.last_name = "test"
+        histoire.end_date = date(2025, 4, 4)
+        self.update_teacher(jules)
