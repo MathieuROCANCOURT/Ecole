@@ -70,10 +70,13 @@ class School:
         - leur enseignant
         - la liste des élèves le suivant"""
         for course in self.courses:
-            print(f"cours de {course}")
-            for student in course.students_taking_it:
-                print(f"- {student}")
-            print()
+            course: Course | None = self.get_course_by_id(course.id)
+            if course is not None:
+                print(f"cours de {course}")
+                for student in course.students_taking_it:
+                    student = self.get_student_by_id(student.student_nbr)
+                    print(f"- {student}")
+                print()
 
     @staticmethod
     def get_course_by_id(id_course: int):
