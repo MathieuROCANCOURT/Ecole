@@ -121,6 +121,11 @@ class School:
         return course_dao.delete(course)
 
     @staticmethod
+    def delete_teacher(teacher: Teacher):
+        teacher_dao: TeacherDao = TeacherDao()
+        return teacher_dao.delete(teacher)
+
+    @staticmethod
     def delete_student(student: Student):
         student_dao: StudentDao = StudentDao()
         return student_dao.delete(student)
