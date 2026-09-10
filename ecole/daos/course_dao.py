@@ -3,8 +3,6 @@
 """
 Classe Dao[Course]
 """
-from daos import student_dao
-from models import teacher
 from models.course import Course
 from daos.dao import Dao
 from dataclasses import dataclass
@@ -41,10 +39,10 @@ class CourseDao(Dao[Course]):
 
         with Dao.connection.cursor() as cursor:
             sql = """
-                SELECT * FROM course
-                JOIN teacher ON course.id_teacher = teacher.id_teacher
-                JOIN person ON person.id_person = teacher.id_person
-                WHERE course.id_course=%s;
+                    SELECT * FROM course
+                    JOIN teacher ON course.id_teacher = teacher.id_teacher
+                    JOIN person ON person.id_person = teacher.id_person
+                    WHERE course.id_course=%s;
                 """
             cursor.execute(sql, (id_course,))
             record = cursor.fetchone()
@@ -60,23 +58,24 @@ class CourseDao(Dao[Course]):
                                        record["hiring_date"]))
             with Dao.connection.cursor() as cursor:
                 sql = """
-                    SELECT first_name, last_name, age FROM course
-                    JOIN takes ON takes.id_course = course.id_course
-                    JOIN student ON student.student_nbr = takes.student_nbr
-                    JOIN person ON person.id_person = student.id_person
-                    WHERE course.id_course=%s;
+                        SELECT student.student_nbr, first_name, last_name, age FROM course
+                        JOIN takes ON takes.id_course = course.id_course
+                        JOIN student ON student.student_nbr = takes.student_nbr
+                        JOIN person ON person.id_person = student.id_person
+                        WHERE course.id_course=%s;
                     """
                 cursor.execute(sql, (id_course,))
                 record = cursor.fetchall()
 
                 for student_coord in record:
-                    course.add_student(
-                        Student(
-                            student_coord["first_name"],
-                            student_coord["last_name"],
-                            student_coord["age"]
-                        )
+                    student = Student(
+                        student_coord["first_name"],
+                        student_coord["last_name"],
+                        student_coord["age"],
                     )
+                    student.student_nbr = student_coord["student_nbr"]
+                    student.students_nb -= 1
+                    course.add_student(student)
 
         else:
             course = None
@@ -92,7 +91,7 @@ class CourseDao(Dao[Course]):
         with Dao.connection.cursor() as cursor:
             sql = """
                     UPDATE course
-                    SET name=%s start_date=%s end_date=%s id_teacher=%s
+                    SET name=%s, start_date=%s, end_date=%s, id_teacher=%s
                     WHERE id_course=%s;
                 """
             cursor.execute(sql, (course.name, course.start_date, course.end_date, course.teacher.id, course.id))
