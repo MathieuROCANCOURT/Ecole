@@ -78,7 +78,33 @@ class TeacherDao(Dao[Teacher]):
         :param teacher: cours déjà mis à jour en mémoire
         :return: True si la mise à jour a pu être réalisée
         """
-        return True
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                    UPDATE person
+                    JOIN teacher ON teacher.id_person = person.id_person
+                    SET person.first_name = %s, person.last_name = %s, person.age = %s
+                    WHERE teacher.id_teacher = %s;
+                """
+            cursor.execute(sql, (teacher.first_name, teacher.last_name, teacher.age, teacher.id))
+
+            if teacher.address is not None:
+                if teacher.address.id is None:
+                    teacher.address.id = address_dao.AddressDao().create(teacher.address)
+                    sql = """
+                            UPDATE person
+                            JOIN teacher ON teacher.id_person = person.id_person
+                            SET person.id_address = %s
+                            WHERE teacher.id_teacher = %s;
+                        """
+                    cursor.execute(sql, (teacher.address.id, teacher.id))
+
+                else:
+                    address_dao.AddressDao().update(teacher.address)
+
+            for course in teacher.courses_teached:
+                course_dao.CourseDao().update(course)
+
+            return cursor.rowcount > 0
 
     def delete(self, teacher: Teacher) -> bool:
         """Supprime en BD l'entité Teacher correspondant à teacher
