@@ -4,6 +4,7 @@
 Classe Dao[Teacher]
 """
 from daos import address_dao, course_dao
+from models.course import Course
 from models.teacher import Teacher
 from daos.dao import Dao
 from dataclasses import dataclass
@@ -65,8 +66,10 @@ class TeacherDao(Dao[Teacher]):
                               record["hiring_date"])
             teacher.address = address_dao.AddressDao().read(record["id_address"])
             teacher.id = record["id_teacher"]
-            for id_course in record["id_courses"].split(","):
-                course_dao.CourseDao().read(int(id_course))
+
+            if record["id_courses"] is not None:
+                for id_course in record["id_courses"].split(","):
+                    course_dao.CourseDao().read(int(id_course))
         else:
             teacher = None
 
