@@ -112,4 +112,26 @@ class TeacherDao(Dao[Teacher]):
         :param teacher: cours dont l'entité Teacher correspondante est à supprimer
         :return: True si la suppression a pu être réalisée
         """
-        return True
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                    SELECT GROUP_CONCAT(id_course) AS id_courses FROM course
+                    JOIN teacher ON teacher.id_teacher = course.id_teacher
+                    WHERE teacher.id_teacher = %s;
+                """
+            cursor.execute(sql, (teacher.id,))
+            record = cursor.fetchone()
+
+            if record["id_courses"] is not None:
+                for id_course in record["id_courses"].split(','):
+                    course: Course | None = course_dao.CourseDao().read(id_course)
+                    if course is not None:
+                        course_dao.CourseDao().delete(course)
+
+            sql = """
+                    DELETE teacher, person FROM person
+                    JOIN teacher ON teacher.id_person = person.id_person
+                    WHERE teacher.id_teacher = %s;
+                """
+            cursor.execute(sql, (teacher.id,))
+
+            return cursor.rowcount > 0
